@@ -1,0 +1,59 @@
+---
+title: "Corpus Reader"
+author: "Titi KH"
+format: html
+editor: visual
+---
+
+## Quarto
+
+Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
+## Collecting Files
+
+```{r}
+# list all files in this specific folder, call it data_docx, and check the first 6
+data_docx <- list.files(path = '/Users/TianyiKou/Documents/[0].Dissertation/Corpus1 copy', full.names = T, recursive = F, pattern = "*.docx")
+
+head(data_docx)
+```
+
+```{r}
+# sapply is like a "wrapper" function for lapply(), instead of returning a list, it returns a vector and matrix
+# use textreadr (read text document into R) and select docx, now we can see what extracted_texts look like
+extracted_texts <- sapply(data_docx, textreadr::read_docx)
+head(extracted_texts)
+```
+
+```{r}
+library(stringr)
+texts <- lapply(extracted_texts, function(rows){
+#Iterate through all documents --> the lapply function pretty much replaced this: for (rows in extracted_texts){}
+#Check line with content "body" STORE IN VARIABLE start_body
+browser()
+start_body <- which(rows == "Body")
+start_body <- start_body + 1
+end_body <- max(which(str_detect(rows, "[.?!]$")))
+#end_body <- end_body -1
+
+body_text <- rows[start_body:end_body] #Slice out the body to keep the rest
+#Here use browse[1 or n]> paste(body_text) to examine the result
+
+# Store the rest in an extra variable
+body_text <- paste(body_text, sep=" ", collapse = "\n\n")
+#rows now is everything but the body
+rows <- rows[-(start_body:end_body)]
+
+#end_body if need to be -1, if everything works
+#get metadata out and store them 
+#let it run--> see if the result looks the same, and do some checking, see if this is a reasonable strategy.
+list(body=body_text)
+  return(body_text)
+})
+```
+
+## Creating columns
+
+```{r}
+
+```
