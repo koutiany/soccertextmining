@@ -25,6 +25,8 @@ extracted_texts <- sapply(data_docx, textreadr::read_docx)
 head(extracted_texts)
 ```
 
+## Ignore for now-11/15
+
 ```{r}
 library(stringr)
 texts <- lapply(extracted_texts, function(rows){
@@ -52,8 +54,40 @@ list(body=body_text)
 })
 ```
 
-## Creating columns
+## Creating columns-try on 11/14
 
 ```{r}
+for (i in 1:length(extracted_texts)){
+  rows <- extracted_texts[i]
+  #ERROR HANDLING
+  possibleError <- tryCatch({
+    start_body <- which(rows == "Body")
+start_body <- start_body + 1
+end_body <- max(which(str_detect(rows, "[.?!\"]$")))
+#end_body <- end_body -1
+
+body_text <- rows[start_body:end_body] #Slice out the body to keep the rest
+#Here use browse[1 or n]> paste(body_text) to examine the result
+
+# Store the rest in an extra variable
+body_text <- paste(body_text, sep=" ", collapse = "\n\n")
+#rows now is everything but the body
+rows <- rows[-(start_body:end_body)]
+
+#end_body if need to be -1, if everything works
+#get metadata out and store them 
+#let it run--> see if the result looks the same, and do some checking, see if this is a reasonable strategy.
+result <- list(body=body_text)
+  }
+    ,
+    error=function(e) {
+      #e
+      print(paste("Oops! --> Error in Loop ",i,sep = ""))
+    }
+  )
+  
+  #if(inherits(possibleError, "error")) next
+  #print(paste("  End Loop ",i,sep = ""))
+}
 
 ```
